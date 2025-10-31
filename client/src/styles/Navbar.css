@@ -1,0 +1,227 @@
+
+.navbar {
+  background: #ffffff; /* WHITE background */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Lighter shadow for white background */
+  padding: 0.8rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 2px solid #ff4444; /* Red accent line  */
+  overflow: hidden;
+}
+
+.nav-container {
+  /* Spans full width */
+  width: 100%; 
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 3rem; 
+  gap: 3rem;
+}
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #ff4444; 
+  text-decoration: none;
+  flex-shrink: 0; 
+  /* Text Shadow REMOVED or GREATLY reduced for white background */
+  text-shadow: none; 
+}
+
+.nav-logo img {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  /* Red drop-shadow might look muddy on white; using regular shadow instead */
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+/* Search Bar Styles  */
+.nav-search {
+  display: flex;
+  flex: 1; 
+  margin: 0 2rem;
+}
+
+.search-input {
+  flex: 1;
+  padding: 1rem 1.2rem;
+  border: 2px solid #cccccc; /* Light gray border */
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  font-size: 1.1rem;
+  outline: none;
+  transition: all 0.3s;
+  background: #f0f0f0; /* Light gray input background */
+  color: #333333; /* Dark text for readability */
+}
+
+.search-input::placeholder {
+  color: #888888; /* Gray placeholder */
+}
+
+.search-input:focus {
+  border-color: #ff4444; /* Red border on focus */
+  background: #ffffff; /* White background on focus */
+}
+
+.search-btn {
+  background: linear-gradient(135deg, #ff4444, #cc0000); 
+  color: white;
+  border: none;
+  padding: 1rem 1.8rem;
+  border-radius: 0 8px 8px 0;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-weight: bold;
+}
+
+.search-btn:hover {
+  background: linear-gradient(135deg, #ff5555, #dd0000); 
+  transform: translateY(-1px);
+  /* Shadow now Black/Gray for white background */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); 
+}
+
+/* Icons Styles */
+.nav-icons {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  flex-shrink: 0; 
+}
+
+.nav-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+  color: #333333; /* Dark icons for contrast */
+  transition: all 0.3s;
+  position: relative;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+}
+
+.nav-icon:hover {
+  color: #ff4444; /* Red on hover - KEPT */
+  background: rgba(255, 68, 68, 0.1); /* Light red background */
+  transform: translateY(-2px);
+}
+
+.nav-icon svg {
+  font-size: 1.2rem;
+  /* Shadow REMOVED or reduced for white background */
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2)); 
+}
+
+.nav-icon span:not(.cart-count) {
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+  color: #333333; /* Dark text for contrast */
+}
+
+.nav-icon:hover span:not(.cart-count) {
+  color: #ff4444; /* Red text on hover  */
+}
+
+.cart-count {
+  position: absolute;
+  top: -2px;
+  right: 2px;
+  background: linear-gradient(135deg, #ff4444, #cc0000); /* Red gradient - KEPT */
+  color: white; /* KEPT */
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  border: 2px solid #ffffff; /* White border to lift off the white bg */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* Black/Gray shadow for white background */
+}
+
+/* Responsive Design (No color changes needed here) */
+@media (max-width: 1024px) {
+  .nav-container {
+    max-width: 100%; 
+    gap: 2rem;
+    padding: 0 1.5rem;
+  }
+
+  
+/* Responsive Design (Ensuring full width on all devices) */
+@media (max-width: 1024px) {
+  .nav-container {
+    max-width: 100%; 
+    gap: 2rem;
+    padding: 0 1.5rem;
+  }
+  
+  .nav-search {
+    flex: 1;
+    max-width: 100%;
+    margin: 0 1rem;
+  }
+  
+  .nav-icons {
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-container {
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+  
+  .nav-search {
+    order: 3;
+    flex: 1 1 100%; 
+    margin: 0;
+    max-width: 100%;
+  }
+  
+  .nav-logo span {
+    display: none;
+  }
+  
+  .nav-icons {
+    gap: 1.2rem;
+  }
+  
+  .nav-icon {
+    padding: 0.4rem 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-icon span:not(.cart-count) {
+    display: none;
+  }
+  
+  .nav-icons {
+    gap: 1rem;
+  }
+  
+  .nav-icon {
+    padding: 0.3rem 0.5rem;
+  }
+  
+  .navbar {
+    border-bottom: 1px solid #ff4444;
+  }
+}
+
+}
