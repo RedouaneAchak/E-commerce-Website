@@ -1,0 +1,57 @@
+# This file tells Git which files and folders to ignore in your project.
+
+### Node.js / Express ###
+# ---------------------------------
+# Dependencies
+# This is the most important folder to ignore.
+node_modules/
+
+# Environment Variables
+# This file contains your secrets (database string, API keys, JWT secret).
+# NEVER commit this to GitHub.
+.env
+.env.local
+.env.development
+.env.production
+
+# Log files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build output (if you use TypeScript)
+dist/
+build/
+
+
+### React / Vite Frontend ###
+# ---------------------------------
+# (These rules will also apply if you add a 'client' folder)
+#
+# Build output
+dist/
+build/
+
+# Vite cache
+.vite/
+
+# Test coverage
+coverage/
+.npm/
+
+
+### Operating System / IDE ###
+# ---------------------------------
+# macOS
+.DS_Store
+.AppleDouble
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# VS Code
+.vscode/
