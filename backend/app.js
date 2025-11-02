@@ -2,7 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
-// const authRoutes = require('./features/auth/auth.routes');
+ const authRoutes = require('./features/auth/auth.routes');
 // const productRoutes = require('./features/products/product.routes');
 // const orderRoutes = require('./features/orders/order.routes');
 // const paymentRoutes = require('./features/payment/payment.routes');
@@ -22,7 +22,7 @@ app.use(urlencoded({extended:true}));
 app.get('/',(req,res)=>{
     res.send("API is running...");
 })
-// app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/auth', authRoutes);
 // app.use('/api/v1/products', productRoutes);
 // app.use('/api/v1/orders', orderRoutes);
 // app.push('/api/v1/payment', paymentRoutes);
