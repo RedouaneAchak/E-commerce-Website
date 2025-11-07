@@ -23,7 +23,7 @@ app.get('/',(req,res)=>{
     res.send("API is running...");
 })
 app.use('/api/v1/auth', authRoutes);
-// app.use('/api/v1/products', productRoutes);
+app.use('/api/v1/products', productRoutes);
 // app.use('/api/v1/orders', orderRoutes);
 // app.push('/api/v1/payment', paymentRoutes);
 
