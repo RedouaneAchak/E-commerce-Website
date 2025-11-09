@@ -5,7 +5,7 @@ const router = express.Router();
 const productController = require('./product.controller');
 
 // 2. We'll also need our auth middleware later to protect routes
-// const { protect, admin } = require('../../middleware/auth.middleware');
+const { protect, admin } = require('../../middleware/auth.middleware');
 
 // --- Public Routes ---
 
@@ -25,19 +25,19 @@ router.get('/:id', productController.getProductById);
 // @desc    Create a new product
 // @access  Private/Admin
 // We'll add 'protect' and 'admin' middleware here later
-router.post('/', productController.createProduct);
+router.post('/', protect, admin, productController.createProduct);
 
 // @route   PUT /api/v1/products/:id
 // @desc    Update a product
 // @access  Private/Admin
 // We'll add 'protect' and 'admin' middleware here later
-router.put('/:id', productController.updateProduct);
+router.put('/:id', protect, admin, productController.updateProduct);
 
 // @route   DELETE /api/v1/products/:id
 // @desc    Delete a product
 // @access  Private/Admin
 // We'll add 'protect' and 'admin' middleware here later
-router.delete('/:id', productController.deleteProduct);
+router.delete('/:id', protect, admin, productController.deleteProduct);
 
 // 3. Export the router
 module.exports = router;
