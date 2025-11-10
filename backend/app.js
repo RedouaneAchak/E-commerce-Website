@@ -3,8 +3,8 @@ const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
  const authRoutes = require('./features/auth/auth.routes');
-// const productRoutes = require('./features/products/product.routes');
-// const orderRoutes = require('./features/orders/order.routes');
+productRoutes = require('./features/products/product.routes');
+orderRoutes = require('./features/orders/order.routes');
 // const paymentRoutes = require('./features/payment/payment.routes');
 // const webhookRoutes = require('./features/webhooks/webhook.routes');
 
