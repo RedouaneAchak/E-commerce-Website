@@ -1,0 +1,19 @@
+import '../styles/CategoryFilter.css';
+
+export default function CategoryFilter({ categories, activeCategory, onCategoryChange }) {
+  return (
+    <div className="category-filter">
+      <div className="category-container">
+        {categories.map((category) => (
+          <button
+            key={category}
+            className={`category-btn ${activeCategory === category ? 'active' : ''}`}
+            onClick={() => onCategoryChange(category)}
+          >
+            {category}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}

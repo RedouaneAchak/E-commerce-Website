@@ -1,0 +1,43 @@
+.products-page {
+  min-height: 100vh;
+  background: #fafafa;
+}
+
+.products-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.products-header {
+  margin-bottom: 30px;
+}
+
+.products-header h1 {
+  font-size: 36px;
+  font-weight: 800;
+  color: #222;
+  margin: 0 0 10px 0;
+  letter-spacing: -0.5px;
+}
+
+.products-count {
+  font-size: 16px;
+  color: #666;
+  font-weight: 500;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .products-container {
+    padding: 30px 15px;
+  }
+  
+  .products-header h1 {
+    font-size: 28px;
+  }
+  
+  .products-count {
+    font-size: 14px;
+  }
+}

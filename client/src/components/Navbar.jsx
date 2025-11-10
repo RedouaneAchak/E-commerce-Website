@@ -1,6 +1,6 @@
-import '../styles/Navbar.css'
+import '../styles/Navbar.css';
 import { FaUser, FaShoppingCart, FaSearch } from 'react-icons/fa';
-import logo from '../assets/RED-in.png'
+import logo from '../assets/RED-in.png';
 
 export default function Navbar() {
   return (

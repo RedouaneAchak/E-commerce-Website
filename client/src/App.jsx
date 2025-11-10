@@ -1,10 +1,10 @@
-
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import Home from './pages/Home';
+import Footer from './components/Footer';
 import 'bootstrap/dist/css/bootstrap.css'
 
 import './App.css';
+import ProductsPage from './pages/ProductsPage';
 
 function App() {
   return (
@@ -13,9 +13,10 @@ function App() {
         <Navbar />
         <main className="main-content">
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<ProductsPage />} />
           </Routes>
         </main>
+        <Footer/>
       </div>
     </Router>
   );
