@@ -1,5 +1,6 @@
+import { Link } from 'react-router-dom';
 import '../styles/Navbar.css';
-import { FaUser, FaShoppingCart, FaSearch } from 'react-icons/fa';
+import { FaUser, FaShoppingCart, FaSearch, FaHeart } from 'react-icons/fa';
 import logo from '../assets/RED-in.png';
 
 export default function Navbar() {
@@ -7,8 +8,18 @@ export default function Navbar() {
     <nav className="navbar">
       <div className="nav-container">
         {/* Logo */}
-        <div className="nav-logo">
+        <Link to="/" className="nav-logo">
           <img src={logo} alt="Store Logo" />
+        </Link>
+
+        {/* Navigation Links */}
+        <div className="nav-links">
+          <Link to="/" className="nav-link">Products</Link>
+          <Link to="/favorites" className="nav-link">
+            <FaHeart className="nav-link-icon" />
+            Favorites
+          </Link>
+          <Link to="/tracking" className="nav-link">Track Order</Link>
         </div>
 
         {/* Search Bar */}
@@ -26,17 +37,17 @@ export default function Navbar() {
         {/* Right Side Icons */}
         <div className="nav-icons">
           {/* User Account */}
-          <div className="nav-icon">
+          <Link to="/account" className="nav-icon">
             <FaUser />
             <span>Account</span>
-          </div>
+          </Link>
 
           {/* Shopping Cart */}
-          <div className="nav-icon">
+          <Link to="/checkout" className="nav-icon">
             <FaShoppingCart />
             <span className="cart-count">0</span>
             <span>Cart</span>
-          </div>
+          </Link>
         </div>
       </div>
     </nav>
