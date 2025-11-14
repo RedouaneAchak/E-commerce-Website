@@ -17,7 +17,6 @@ if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
 }
 app.use(express.json());
-app.use(urlencoded({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
 app.use(
   express.json({
@@ -42,7 +41,7 @@ app.use((req, res, next) => {
     next(error);
 })
 app.use((err, req, res, next) => {
-    const statusCode = res.statuscode === 200 ? 500 : res.statuscode;
+    const statusCode = err.statusCode || 500;
     res.status(statusCode);
     res.json({
         message: err.message,
