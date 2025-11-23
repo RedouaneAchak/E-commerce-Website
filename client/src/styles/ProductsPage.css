@@ -27,20 +27,6 @@
   font-weight: 500;
   margin: 0;
 }
-/* Add to your ProductsPage.css */
-.loading, .error {
-  text-align: center;
-  padding: 2rem;
-  font-size: 1.1rem;
-}
-
-.error {
-  color: #d32f2f;
-}
-
-.loading {
-  color: #666;
-}
 
 @media (max-width: 768px) {
   .products-container {
