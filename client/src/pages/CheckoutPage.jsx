@@ -1,28 +1,15 @@
 import { useState } from 'react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import { FaCreditCard, FaLock, FaCheckCircle } from 'react-icons/fa';
+import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from 'react-router-dom';
 import '../styles/CheckoutPage.css';
 
-// Mock cart items
-const mockCartItems = [
-  {
-    id: 1,
-    name: "Premium Wireless Headphones",
-    price: 79.99,
-    quantity: 1,
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&h=200&fit=crop"
-  },
-  {
-    id: 3,
-    name: "Designer Leather Bag",
-    price: 149.99,
-    quantity: 2,
-    image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=200&h=200&fit=crop"
-  }
-];
-
 export default function CheckoutPage() {
+  const { cart, clearCart } = useCart();
+  const { token } = useAuth();
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: '',
     firstName: '',
@@ -31,15 +18,14 @@ export default function CheckoutPage() {
     city: '',
     zipCode: '',
     country: '',
-    cardNumber: '',
-    expiryDate: '',
-    cvv: ''
   });
 
-  const subtotal = mockCartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const shipping = 10.00;
+  const BASE_URL = "http://localhost:5000/api/v1";
+
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const tax = subtotal * 0.1;
-  const total = subtotal + shipping + tax;
+  const shipping = 10;
+  const total = subtotal + tax + shipping;
 
   const handleChange = (e) => {
     setFormData({
@@ -48,17 +34,95 @@ export default function CheckoutPage() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Order placed:', formData);
-    // Process order logic here
+
+    if (cart.length === 0) {
+      return alert("Your cart is empty!");
+    }
+
+    if (!token) {
+      alert("You must be logged in to checkout");
+      return navigate("/login_register");
+    }
+
+    try {
+      // 1️⃣ Create order in backend
+      const orderBody = {
+        orderItems: cart.map(item => ({
+          name: item.name,
+          qty: item.quantity,
+          image: item.image,
+          price: item.price,
+          product: item.id   // backend product ID
+        })),
+        shippingAddress: {
+          address: formData.address,
+          city: formData.city,
+          postalCode: formData.zipCode,
+          country: formData.country
+        },
+        paymentMethod: "Stripe",
+        itemsPrice: subtotal,
+        taxPrice: tax,
+        shippingPrice: shipping,
+        totalPrice: total
+      };
+
+      const orderRes = await fetch(`${BASE_URL}/orders`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(orderBody)
+      });
+
+      const orderData = await orderRes.json();
+
+      if (!orderRes.ok) {
+        throw new Error(orderData.message || "Failed to create order");
+      }
+
+      const orderId = orderData._id;
+
+      // 2️⃣ Create Stripe checkout session
+      const paymentRes = await fetch(`${BASE_URL}/payment/create-checkout-session`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          cartItems: cart.map(item => ({
+            product: item.id,
+            qty: item.quantity
+          })),
+          orderId: orderId
+        })
+      });
+
+      const paymentData = await paymentRes.json();
+
+      if (!paymentRes.ok) {
+        throw new Error(paymentData.message || "Failed to initiate payment session");
+      }
+
+      // 3️⃣ Redirect user to Stripe payment page
+      window.location.href = paymentData.url;
+
+      // 4️⃣ Optional: clear the cart after Stripe payment returns (via webhook page)
+      // clearCart();
+
+    } catch (err) {
+      alert("Checkout Error: " + err.message);
+    }
   };
 
   return (
     <div className="checkout-page">
-
-      
       <div className="checkout-container">
+
         <div className="checkout-header">
           <h1>Checkout</h1>
           <div className="secure-badge">
@@ -68,93 +132,93 @@ export default function CheckoutPage() {
         </div>
 
         <div className="checkout-content">
-          {/* Left Side - Forms */}
+
+          {/* LEFT SIDE */}
           <div className="checkout-forms">
             <form onSubmit={handleSubmit}>
-              {/* Contact Information */}
+              
+              {/* CONTACT */}
               <div className="form-section">
                 <h2>Contact Information</h2>
                 <div className="form-group">
                   <label>Email Address</label>
-                  <input
+                  <input 
                     type="email"
                     name="email"
+                    placeholder="your.email@example.com"
                     value={formData.email}
                     onChange={handleChange}
-                    placeholder="your.email@example.com"
                     required
                   />
                 </div>
               </div>
 
-              {/* Shipping Address */}
+              {/* SHIPPING */}
               <div className="form-section">
                 <h2>Shipping Address</h2>
+
                 <div className="form-row">
                   <div className="form-group">
                     <label>First Name</label>
-                    <input
+                    <input 
                       type="text"
                       name="firstName"
                       value={formData.firstName}
                       onChange={handleChange}
-                      placeholder="John"
-                      required
+                      required 
                     />
                   </div>
+
                   <div className="form-group">
                     <label>Last Name</label>
-                    <input
+                    <input 
                       type="text"
                       name="lastName"
                       value={formData.lastName}
                       onChange={handleChange}
-                      placeholder="Doe"
-                      required
+                      required 
                     />
                   </div>
                 </div>
 
                 <div className="form-group">
                   <label>Street Address</label>
-                  <input
+                  <input 
                     type="text"
                     name="address"
                     value={formData.address}
                     onChange={handleChange}
-                    placeholder="123 Main Street"
-                    required
+                    required 
                   />
                 </div>
 
                 <div className="form-row">
                   <div className="form-group">
                     <label>City</label>
-                    <input
+                    <input 
                       type="text"
                       name="city"
                       value={formData.city}
                       onChange={handleChange}
-                      placeholder="New York"
-                      required
+                      required 
                     />
                   </div>
+
                   <div className="form-group">
                     <label>ZIP Code</label>
-                    <input
+                    <input 
                       type="text"
                       name="zipCode"
                       value={formData.zipCode}
                       onChange={handleChange}
-                      placeholder="10001"
-                      required
+                      required 
                     />
                   </div>
                 </div>
 
                 <div className="form-group">
                   <label>Country</label>
-                  <select
+                  <select 
                     name="country"
                     value={formData.country}
                     onChange={handleChange}
@@ -162,79 +226,43 @@ export default function CheckoutPage() {
                   >
                     <option value="">Select Country</option>
                     <option value="US">United States</option>
-                    <option value="CA">Canada</option>
                     <option value="UK">United Kingdom</option>
-                    <option value="AU">Australia</option>
+                    <option value="CA">Canada</option>
                   </select>
                 </div>
               </div>
 
-              {/* Payment Information */}
+              {/* PAYMENT INFO */}
               <div className="form-section">
-                <h2>
-                  <FaCreditCard /> Payment Information
-                </h2>
-                <div className="form-group">
-                  <label>Card Number</label>
-                  <input
-                    type="text"
-                    name="cardNumber"
-                    value={formData.cardNumber}
-                    onChange={handleChange}
-                    placeholder="1234 5678 9012 3456"
-                    maxLength="19"
-                    required
-                  />
-                </div>
-
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Expiry Date</label>
-                    <input
-                      type="text"
-                      name="expiryDate"
-                      value={formData.expiryDate}
-                      onChange={handleChange}
-                      placeholder="MM/YY"
-                      maxLength="5"
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label>CVV</label>
-                    <input
-                      type="text"
-                      name="cvv"
-                      value={formData.cvv}
-                      onChange={handleChange}
-                      placeholder="123"
-                      maxLength="4"
-                      required
-                    />
-                  </div>
-                </div>
+                <h2><FaCreditCard /> Payment Information</h2>
+                <p style={{ color: "#555", fontSize: "14px" }}>
+                  You will enter your card securely on Stripe after pressing "Place Order".
+                </p>
               </div>
 
               <button type="submit" className="place-order-btn">
                 <FaCheckCircle />
-                <span>Place Order - ${total.toFixed(2)}</span>
+                <span>Proceed to Payment – ${total.toFixed(2)}</span>
               </button>
+
             </form>
           </div>
 
-          {/* Right Side - Order Summary */}
+          {/* RIGHT SIDE */}
           <div className="order-summary">
             <h2>Order Summary</h2>
-            
+
             <div className="cart-items">
-              {mockCartItems.map((item) => (
+              {cart.map((item) => (
                 <div key={item.id} className="summary-item">
                   <img src={item.image} alt={item.name} />
                   <div className="item-details">
                     <h4>{item.name}</h4>
                     <p>Qty: {item.quantity}</p>
                   </div>
-                  <span className="item-price">${(item.price * item.quantity).toFixed(2)}</span>
+                  <span className="item-price">
+                    ${(item.price * item.quantity).toFixed(2)}
+                  </span>
                 </div>
               ))}
             </div>
@@ -242,18 +270,9 @@ export default function CheckoutPage() {
             <div className="summary-divider"></div>
 
             <div className="summary-calculations">
-              <div className="calc-row">
-                <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
-              </div>
-              <div className="calc-row">
-                <span>Shipping</span>
-                <span>${shipping.toFixed(2)}</span>
-              </div>
-              <div className="calc-row">
-                <span>Tax (10%)</span>
-                <span>${tax.toFixed(2)}</span>
-              </div>
+              <div className="calc-row"><span>Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
+              <div className="calc-row"><span>Shipping</span><span>${shipping.toFixed(2)}</span></div>
+              <div className="calc-row"><span>Tax (10%)</span><span>${tax.toFixed(2)}</span></div>
             </div>
 
             <div className="summary-divider"></div>
@@ -264,17 +283,14 @@ export default function CheckoutPage() {
             </div>
 
             <div className="trust-badges">
-              <div className="badge">
-                <FaLock />
-                <span>Secure Payment</span>
-              </div>
-              <div className="badge">
-                <FaCheckCircle />
-                <span>Money Back Guarantee</span>
-              </div>
+              <div className="badge"><FaLock /><span>Secure Payment</span></div>
+              <div className="badge"><FaCheckCircle /><span>Guaranteed Protection</span></div>
             </div>
+
           </div>
+
         </div>
+
       </div>
     </div>
   );

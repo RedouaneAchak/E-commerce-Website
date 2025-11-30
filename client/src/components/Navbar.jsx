@@ -2,8 +2,10 @@ import { Link } from 'react-router-dom';
 import '../styles/Navbar.css';
 import { FaUser, FaShoppingCart, FaSearch, FaHeart } from 'react-icons/fa';
 import logo from '../assets/RED-in.png';
+import { useCart } from "../context/CartContext";
 
 export default function Navbar() {
+  const { cartCount } = useCart();
   return (
     <nav className="navbar">
       <div className="nav-container">
@@ -24,9 +26,9 @@ export default function Navbar() {
 
         {/* Search Bar */}
         <div className="nav-search">
-          <input 
-            type="text" 
-            placeholder="Search products..." 
+          <input
+            type="text"
+            placeholder="Search products..."
             className="search-input"
           />
           <button className="search-btn">
@@ -45,7 +47,7 @@ export default function Navbar() {
           {/* Shopping Cart */}
           <Link to="/checkout" className="nav-icon">
             <FaShoppingCart />
-            <span className="cart-count">0</span>
+            <span className="cart-count">{cartCount}</span>
             <span>Cart</span>
           </Link>
           <Link to="/login_register" className="nav-icon">
