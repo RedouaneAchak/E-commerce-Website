@@ -5,7 +5,7 @@ import ProductsPage from './pages/ProductsPage';
 import FavoritesPage from './pages/FavoritesPage';
 import CheckoutPage from './pages/CheckoutPage';
 import OrderTrackingPage from './pages/OrderTrackingPage';
-import 'bootstrap/dist/css/bootstrap.css';
+import LoginRegisterPage from './pages/login_registerPage';  
 import './App.css';
 
 function App() {
@@ -19,6 +19,7 @@ function App() {
             <Route path="/favorites" element={<FavoritesPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/tracking" element={<OrderTrackingPage />} />
+            <Route path="/login_register" element={<LoginRegisterPage />} />
           </Routes>
         </main>
         <Footer />

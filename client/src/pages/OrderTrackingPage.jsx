@@ -231,7 +231,6 @@ export default function OrderTrackingPage() {
         </div>
       </div>
 
-      <Footer />
     </div>
   );
 }

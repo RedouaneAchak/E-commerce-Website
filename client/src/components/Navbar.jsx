@@ -48,6 +48,9 @@ export default function Navbar() {
             <span className="cart-count">0</span>
             <span>Cart</span>
           </Link>
+          <Link to="/login_register" className="nav-icon">
+            <span>Login/Register</span>
+          </Link>
         </div>
       </div>
     </nav>
