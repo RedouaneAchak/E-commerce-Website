@@ -10,6 +10,37 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   // -----------------------------------------
+  // Fetch current user if token exists
+  // -----------------------------------------
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const res = await fetch(`${BASE_URL}/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch user");
+
+        const data = await res.json();
+        setUser(data.user);
+      } catch (err) {
+        console.error(err);
+        setToken(null);
+        localStorage.removeItem("token");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, [token]);
+
+  // -----------------------------------------
   // REGISTER
   // -----------------------------------------
   const register = async (name, email, password) => {
@@ -27,7 +58,6 @@ export function AuthProvider({ children }) {
       setToken(data.token);
       setUser(data.user);
 
-      // Return user along with success
       return { success: true, user: data.user };
     } catch (err) {
       return { success: false, error: err.message };
@@ -52,7 +82,6 @@ export function AuthProvider({ children }) {
       setToken(data.token);
       setUser(data.user);
 
-      // Return user along with success
       return { success: true, user: data.user };
     } catch (err) {
       return { success: false, error: err.message };

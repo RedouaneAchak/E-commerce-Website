@@ -1,48 +1,52 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { FaHeart, FaShoppingCart, FaTrash } from 'react-icons/fa';
+import { useAuth } from '../context/AuthContext';
 import '../styles/FavoritesPage.css';
 
-// Mock favorites data
-const mockFavorites = [
-  {
-    id: 1,
-    name: "Premium Wireless Headphones",
-    category: "Electronics",
-    price: 79.99,
-    originalPrice: 99.99,
-    discount: 20,
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop",
-    inStock: true
-  },
-  {
-    id: 3,
-    name: "Designer Leather Bag",
-    category: "Fashion",
-    price: 149.99,
-    originalPrice: 199.99,
-    discount: 25,
-    image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500&h=500&fit=crop",
-    inStock: true
-  },
-  {
-    id: 9,
-    name: "Mechanical Keyboard",
-    category: "Electronics",
-    price: 129.99,
-    originalPrice: 169.99,
-    discount: 24,
-    image: "https://images.unsplash.com/photo-1595225476474-87563907a212?w=500&h=500&fit=crop",
-    inStock: false
-  }
-];
-
 export default function FavoritesPage() {
-  const [favorites, setFavorites] = useState(mockFavorites);
+  const { user, token } = useAuth();
+  const [favorites, setFavorites] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  const removeFromFavorites = (id) => {
-    setFavorites(favorites.filter(item => item.id !== id));
+  // Fetch user's favorites from backend
+  useEffect(() => {
+    if (!user) return;
+
+    const fetchFavorites = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/v1/users/favorites", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!res.ok) throw new Error("Failed to fetch favorites");
+
+        const data = await res.json();
+        setFavorites(data);
+      } catch (err) {
+        console.error("Error fetching favorites:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFavorites();
+  }, [user, token]);
+
+  const removeFromFavorites = async (id) => {
+    try {
+      const res = await fetch(`http://localhost:5000/api/v1/users/favorites/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error("Failed to remove favorite");
+      setFavorites(favorites.filter(item => item._id !== id));
+    } catch (err) {
+      console.error("Error removing favorite:", err);
+    }
   };
 
   const addToCart = (product) => {
@@ -50,16 +54,19 @@ export default function FavoritesPage() {
     // Add to cart logic here
   };
 
+  if (loading) {
+    return <div className="favorites-page"><p>Loading favorites...</p></div>;
+  }
+
   return (
     <div className="favorites-page">
-      
       <div className="favorites-container">
         <div className="favorites-header">
           <div className="header-content">
             <FaHeart className="header-icon" />
             <div>
               <h1>My Favorites</h1>
-              <p>{favorites.length} items saved</p>
+              <p>{favorites.length} {favorites.length === 1 ? 'item' : 'items'} saved</p>
             </div>
           </div>
         </div>
@@ -67,10 +74,10 @@ export default function FavoritesPage() {
         {favorites.length > 0 ? (
           <div className="favorites-grid">
             {favorites.map((item) => (
-              <div key={item.id} className="favorite-card">
+              <div key={item._id} className="favorite-card">
                 <button 
                   className="remove-btn"
-                  onClick={() => removeFromFavorites(item.id)}
+                  onClick={() => removeFromFavorites(item._id)}
                   aria-label="Remove from favorites"
                 >
                   <FaTrash />
@@ -118,11 +125,15 @@ export default function FavoritesPage() {
             <FaHeart className="empty-icon" />
             <h2>Your favorites list is empty</h2>
             <p>Start adding products you love to keep track of them</p>
-            <a href="/products" className="browse-btn">Browse Products</a>
+            <button 
+              className="browse-btn"
+              onClick={() => navigate("/")}
+            >
+              Browse Products
+            </button>
           </div>
         )}
       </div>
-
     </div>
   );
 }
