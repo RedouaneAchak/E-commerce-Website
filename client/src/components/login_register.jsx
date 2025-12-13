@@ -56,6 +56,7 @@ export default function LoginRegister() {
     } else {
       console.log("User logged in");
       navigate("/"); // redirect regular user
+      console.log(res.user);
     }
   } else {
     // Safety fallback in case user is missing
