@@ -89,8 +89,6 @@ export default function ProductCard({ product }) {
             <span className="rating-count">({product.reviews || 0})</span>
           </div>
         </div>
-
-       
       </div>
 
       <div className="box-down">
@@ -98,7 +96,8 @@ export default function ProductCard({ product }) {
           <div className="h-bg-inner"></div>
         </div>
 
-        <div className="cart">
+        {/* --- MODIFIED: Added position-fix class for better layout --- */}
+        <div className="cart position-fix">
           <div className="product-price">
             {product.discount ? (
               <>
@@ -123,6 +122,7 @@ export default function ProductCard({ product }) {
             </button>
           </div>
         </div>
+        {/* ------------------------------------------------------------- */}
 
       </div>
     </Link>
