@@ -24,6 +24,10 @@ const userSchema = new mongoose.Schema(
       required: true,
       default: false, // New users are not admins by default
     },
+    favorites: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Product'
+    }]
   },
   {
     // 2. Automatically add 'createdAt' and 'updatedAt' fields
@@ -42,10 +46,10 @@ userSchema.pre('save', async function (next) {
 
   // Generate a 'salt' - a random string to make the hash unique
   const salt = await bcrypt.genSalt(10); // 10 is the "cost" or strength
-  
+
   // Hash the password with the salt
   this.password = await bcrypt.hash(this.password, salt);
-  
+
   // Continue with the save operation
   next();
 });
