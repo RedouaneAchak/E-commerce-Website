@@ -19,24 +19,37 @@ export default function AdminDashboard() {
     description: "",
     image: "",
   });
+  const [loading, setLoading] = useState(true);
 
-  // Redirect non-admins
+  // Redirect non-admins and load data
   useEffect(() => {
     if (!user) return;
+
     if (!user.isAdmin) {
       navigate("/");
-    } else {
-      fetchProducts();
-      fetchOrders();
+      return;
     }
+
+    const fetchData = async () => {
+      await fetchProducts();
+      await fetchOrders();
+      setLoading(false);
+    };
+
+    fetchData();
   }, [user]);
 
   // Fetch all products
   const fetchProducts = async () => {
+    if (!token) return;
+
     try {
       const res = await fetch("http://localhost:5000/api/v1/products", {
         headers: { Authorization: `Bearer ${token}` },
       });
+
+      if (!res.ok) throw new Error("Failed to fetch products");
+
       const data = await res.json();
       setProducts(data);
     } catch (err) {
@@ -46,10 +59,15 @@ export default function AdminDashboard() {
 
   // Fetch all orders
   const fetchOrders = async () => {
+    if (!token) return;
+
     try {
       const res = await fetch("http://localhost:5000/api/v1/orders", {
         headers: { Authorization: `Bearer ${token}` },
       });
+
+      if (!res.ok) throw new Error("Failed to fetch orders");
+
       const data = await res.json();
       setOrders(data);
     } catch (err) {
@@ -60,6 +78,20 @@ export default function AdminDashboard() {
   // Add new product
   const handleAddProduct = async (e) => {
     e.preventDefault();
+
+    if (!token || !user?._id) {
+      alert("User not authenticated.");
+      return;
+    }
+
+    // Ensure numeric fields are numbers
+    const productPayload = {
+      ...newProduct,
+      user: user._id,
+      price: Number(newProduct.price),
+      countInStock: Number(newProduct.countInStock),
+    };
+
     try {
       const res = await fetch("http://localhost:5000/api/v1/products", {
         method: "POST",
@@ -67,9 +99,13 @@ export default function AdminDashboard() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ ...newProduct, user: user.id }),
+        body: JSON.stringify(productPayload),
       });
+
       const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message || "Failed to add product");
+
       setProducts([...products, data]);
       setNewProduct({
         name: "",
@@ -80,19 +116,27 @@ export default function AdminDashboard() {
         description: "",
         image: "",
       });
+
       alert("Product added!");
     } catch (err) {
       console.error("Error adding product:", err);
+      alert("Error adding product: " + err.message);
     }
   };
 
   // Mark order as delivered
   const handleDeliverOrder = async (orderId) => {
     try {
-      await fetch(`http://localhost:5000/api/v1/orders/${orderId}/deliver`, {
-        method: "PUT",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        `http://localhost:5000/api/v1/orders/${orderId}/deliver`,
+        {
+          method: "PUT",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!res.ok) throw new Error("Failed to mark order as delivered");
+
       setOrders(
         orders.map((o) =>
           o._id === orderId ? { ...o, isDelivered: true } : o
@@ -102,6 +146,8 @@ export default function AdminDashboard() {
       console.error("Error marking order delivered:", err);
     }
   };
+
+  if (loading) return <p>Loading dashboard...</p>;
 
   return (
     <div className="admin-dashboard">
@@ -166,7 +212,10 @@ export default function AdminDashboard() {
                 placeholder="Stock Count"
                 value={newProduct.countInStock}
                 onChange={(e) =>
-                  setNewProduct({ ...newProduct, countInStock: e.target.value })
+                  setNewProduct({
+                    ...newProduct,
+                    countInStock: e.target.value,
+                  })
                 }
                 required
               />
@@ -193,7 +242,7 @@ export default function AdminDashboard() {
             <h2>Existing Products</h2>
             <div className="product-list">
               {products.map((p) => (
-                <div key={p.id || p._id} className="product-card">
+                <div key={p._id} className="product-card">
                   <img src={p.image} alt={p.name} />
                   <h3>{p.name}</h3>
                   <p>${p.price}</p>
