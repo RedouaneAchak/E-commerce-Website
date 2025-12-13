@@ -40,20 +40,33 @@ export default function LoginRegister() {
         }
     };
 
-    // SUBMIT LOGIN
-    const handleLoginSubmit = async (e) => {
-        e.preventDefault();
-        const { email, password } = loginForm;
+   const handleLoginSubmit = async (e) => {
+  e.preventDefault();
+  const { email, password } = loginForm;
 
-        const res = await login(email, password);
+  const res = await login(email, password);
 
-        if (!res.success) {
-            alert("Login error: " + res.error);
-        } else {
-            alert("Logged in!");
-            navigate("/"); // redirect to home
-        }
-    };
+  if (!res.success) {
+    alert("Login error: " + res.error);
+  } else if (res.user) {
+    alert("Logged in!");
+    if (res.user.isAdmin) {
+      console.log("Admin logged in");
+      navigate("/admin_welcome"); // redirect admin
+    } else {
+      console.log("User logged in");
+      navigate("/"); // redirect regular user
+      console.log(res.user);
+    }
+  } else {
+    // Safety fallback in case user is missing
+    alert("Login succeeded but user data is missing.");
+    navigate("/");
+  }
+};
+
+
+
 
 
     return (

@@ -27,7 +27,8 @@ export function AuthProvider({ children }) {
       setToken(data.token);
       setUser(data.user);
 
-      return { success: true };
+      // Return user along with success
+      return { success: true, user: data.user };
     } catch (err) {
       return { success: false, error: err.message };
     }
@@ -51,7 +52,8 @@ export function AuthProvider({ children }) {
       setToken(data.token);
       setUser(data.user);
 
-      return { success: true };
+      // Return user along with success
+      return { success: true, user: data.user };
     } catch (err) {
       return { success: false, error: err.message };
     }

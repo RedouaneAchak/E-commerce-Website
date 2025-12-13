@@ -1,0 +1,42 @@
+/* src/styles/adminWelcome.css */
+.admin-welcome {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #fff; /* White background */
+}
+
+.admin-card {
+    background-color: #c8102e; /* Red card */
+    color: white;
+    padding: 40px 60px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.admin-card h1 {
+    margin-bottom: 20px;
+    font-size: 2.5rem;
+}
+
+.admin-card p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+}
+
+.logout-btn {
+    background-color: white;
+    color: #c8102e;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.logout-btn:hover {
+    background-color: #f2f2f2;
+}
