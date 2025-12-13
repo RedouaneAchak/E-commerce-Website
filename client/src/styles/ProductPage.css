@@ -1,0 +1,147 @@
+/* ProductPage.css */
+.product-page {
+  padding: 40px;
+  background-color: #fff;
+  color: #333;
+  min-height: 80vh;
+  font-family: 'Poppins', sans-serif;
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  color: #e60000;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.back-btn:hover {
+  color: #b30000;
+}
+
+.product-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  max-width: 1000px;
+  margin: 0 auto;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  background-color: #fff;
+}
+
+.product-image {
+  flex: 1;
+  min-width: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.product-image img {
+  width: 100%;
+  border-radius: 15px;
+  transition: transform 0.3s;
+}
+
+.product-image img:hover {
+  transform: scale(1.05);
+}
+
+.product-details {
+  flex: 1;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.product-title {
+  font-size: 2rem;
+  color: #e60000;
+  font-weight: 700;
+}
+
+.product-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.product-category {
+  font-size: 1rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.product-rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9rem;
+  color: #e60000;
+}
+
+.star-filled {
+  color: #e60000;
+}
+
+.star-empty {
+  color: #ccc;
+}
+
+.rating-count {
+  margin-left: 5px;
+  color: #777;
+  font-size: 0.8rem;
+}
+
+.product-price {
+  font-size: 1.8rem;
+  color: #e60000;
+  font-weight: 700;
+}
+
+.product-description {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #333;
+}
+
+.add-to-cart-btn {
+  padding: 15px 25px;
+  background: linear-gradient(45deg, #e60000, #ff3333);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.add-to-cart-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(230,0,0,0.3);
+}
+
+.cart-icon {
+  font-size: 1.2rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .product-container {
+    flex-direction: column;
+  }
+
+  .product-image, .product-details {
+    min-width: 100%;
+  }
+}

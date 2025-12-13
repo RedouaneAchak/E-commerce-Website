@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaCreditCard, FaLock, FaCheckCircle } from 'react-icons/fa';
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
@@ -20,7 +20,9 @@ export default function CheckoutPage() {
     country: '',
   });
 
-  const BASE_URL = "http://localhost:5000/api/v1";
+  const [loading, setLoading] = useState(false);
+
+  const BASE_URL = "http://localhost:5000/  /v1";
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const tax = subtotal * 0.1;
@@ -37,24 +39,23 @@ export default function CheckoutPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (cart.length === 0) {
-      return alert("Your cart is empty!");
-    }
-
+    if (cart.length === 0) return alert("Your cart is empty!");
     if (!token) {
       alert("You must be logged in to checkout");
       return navigate("/login_register");
     }
 
+    setLoading(true);
+
     try {
-      // 1️⃣ Create order in backend
+      // 1️⃣ Create order
       const orderBody = {
         orderItems: cart.map(item => ({
           name: item.name,
           qty: item.quantity,
           image: item.image,
           price: item.price,
-          product: item.id   // backend product ID
+          product: item.id
         })),
         shippingAddress: {
           address: formData.address,
@@ -79,14 +80,11 @@ export default function CheckoutPage() {
       });
 
       const orderData = await orderRes.json();
-
-      if (!orderRes.ok) {
-        throw new Error(orderData.message || "Failed to create order");
-      }
+      if (!orderRes.ok) throw new Error(orderData.message || "Failed to create order");
 
       const orderId = orderData._id;
 
-      // 2️⃣ Create Stripe checkout session
+      // 2️⃣ Stripe checkout
       const paymentRes = await fetch(`${BASE_URL}/payment/create-checkout-session`, {
         method: "POST",
         headers: {
@@ -94,28 +92,21 @@ export default function CheckoutPage() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          cartItems: cart.map(item => ({
-            product: item.id,
-            qty: item.quantity
-          })),
-          orderId: orderId
+          cartItems: cart.map(item => ({ product: item.id, qty: item.quantity })),
+          orderId
         })
       });
 
       const paymentData = await paymentRes.json();
+      if (!paymentRes.ok) throw new Error(paymentData.message || "Failed to initiate payment session");
 
-      if (!paymentRes.ok) {
-        throw new Error(paymentData.message || "Failed to initiate payment session");
-      }
-
-      // 3️⃣ Redirect user to Stripe payment page
+      // 3️⃣ Redirect to Stripe
       window.location.href = paymentData.url;
-
-      // 4️⃣ Optional: clear the cart after Stripe payment returns (via webhook page)
-      // clearCart();
 
     } catch (err) {
       alert("Checkout Error: " + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -240,9 +231,9 @@ export default function CheckoutPage() {
                 </p>
               </div>
 
-              <button type="submit" className="place-order-btn">
+              <button type="submit" className="place-order-btn" disabled={loading}>
                 <FaCheckCircle />
-                <span>Proceed to Payment – ${total.toFixed(2)}</span>
+                <span>{loading ? "Processing..." : `Proceed to Payment – $${total.toFixed(2)}`}</span>
               </button>
 
             </form>

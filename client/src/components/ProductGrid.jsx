@@ -11,7 +11,7 @@ export default function ProductGrid({ products }) {
       ) : (
         <div className="no-products">
           <p>No products found in this category</p>
-ProductsPage.jsx        </div>
+          ProductsPage.jsx        </div>
       )}
     </div>
   );

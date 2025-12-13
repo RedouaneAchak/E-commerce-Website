@@ -1,11 +1,13 @@
 import '../styles/ProductCard.css';
 import { FaShoppingCart, FaStar } from 'react-icons/fa';
 import { useCart } from "../context/CartContext";
+import { Link } from 'react-router-dom';
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e) => {
+    e.preventDefault(); // prevent Link navigation when clicking the cart button
     addToCart({
       id: product._id,      // IMPORTANT: backend product ID
       name: product.name,
@@ -16,7 +18,7 @@ export default function ProductCard({ product }) {
   };
 
   return (
-    <div className="el-wrapper">
+    <Link to={`/product/${product._id}`} className="el-wrapper">
       <div className="box-up">
         <img className="img" src={product.image} alt={product.name} />
 
@@ -30,7 +32,6 @@ export default function ProductCard({ product }) {
             <span className="p-company">{product.category}</span>
           </div>
 
-          {/* Product rating */}
           <div className="product-rating">
             {[...Array(5)].map((_, i) => (
               <FaStar
@@ -49,7 +50,6 @@ export default function ProductCard({ product }) {
         </div>
 
         <div className="cart">
-          {/* Price display */}
           <div className="product-price">
             {product.discount ? (
               <>
@@ -62,12 +62,15 @@ export default function ProductCard({ product }) {
           </div>
 
           {/* ADD TO CART BUTTON */}
-          <button className="add-to-cart" onClick={handleAddToCart}>
+          <button
+            className="add-to-cart"
+            onClick={handleAddToCart}
+          >
             <FaShoppingCart className="cart-icon" />
             <span className="txt">Add to Cart</span>
           </button>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

@@ -35,12 +35,12 @@ export function CartProvider({ children }) {
 
   // Change quantity
   const updateQuantity = (id, qty) => {
-    setCart((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, quantity: qty } : item
-      )
-    );
-  };
+  if (qty < 1) qty = 1;
+  setCart(prev =>
+    prev.map(item => item.id === id ? { ...item, quantity: qty } : item)
+  );
+};
+
 
   // Clear cart
   const clearCart = () => setCart([]);

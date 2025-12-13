@@ -1,14 +1,14 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import './index.css'
-import App from './App.jsx'
-
+import './index.css';
+import App from './App.jsx';
+import { CartProvider } from "./context/CartContext.jsx";
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: 5 * 60 * 1000,
       retry: 2,
     },
   },
@@ -17,7 +17,9 @@ const queryClient = new QueryClient({
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <CartProvider>
+        <App />
+      </CartProvider>
     </QueryClientProvider>
-  </StrictMode>,
-)
+  </StrictMode>
+);
