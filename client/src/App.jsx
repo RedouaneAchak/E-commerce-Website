@@ -10,6 +10,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import ProductPage from './pages/ProductPage';
 import './App.css';
+import AdminWelcome from './pages/AdminWelcome';
 
 function PrivateRoute({ children }) {
   const { user } = useAuth();
@@ -45,6 +46,8 @@ export default function App() {
                 <Route path="/product/:id" element={
                   <PrivateRoute><ProductPage /></PrivateRoute>
                 } />
+                <Route path="/admin_welcome" element={<PrivateRoute><AdminWelcome /></PrivateRoute>} />
+
 
               </Routes>
             </main>
