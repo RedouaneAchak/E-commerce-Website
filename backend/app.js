@@ -7,6 +7,7 @@ const productRoutes = require('./features/products/product.routes');
 const orderRoutes = require('./features/orders/order.routes');
 const paymentRoutes = require('./features/payment/payment.routes');
 const webhookRoutes = require('./features/webhooks/webhook.routes');
+const userRoutes = require('./features/users/user.routes');
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use('/api/v1/webhooks', webhookRoutes);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/orders', orderRoutes);
+app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/payment', paymentRoutes);
 
 app.use((req, res, next) => {
