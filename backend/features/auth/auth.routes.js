@@ -22,7 +22,6 @@ router.post('/login', authController.loginUser);
 // @desc    Get current user profile (Requires authentication)
 // @access  Private
 router.get("/me", protect, (req, res) => {
-    // FIX APPLIED HERE: Wrap the user in a 'user' property
     res.json({ user: req.user });
 });
 
