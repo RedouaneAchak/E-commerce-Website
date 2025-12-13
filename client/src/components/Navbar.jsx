@@ -22,22 +22,33 @@ export default function Navbar() {
           <img src={logo} alt="Store Logo" />
         </Link>
 
+        {/* Links depending on user role */}
         {user && (
           <div className="nav-links">
-            <Link to="/" className="nav-link">Products</Link>
-            <Link to="/favorites" className="nav-link">
-              <FaHeart className="nav-link-icon" />
-              Favorites
-            </Link>
-            <Link to="/tracking" className="nav-link">Track Order</Link>
+            {user.isAdmin ? (
+              <>
+                <Link to="/admin_welcome" className="nav-link">Dashboard</Link>
+              </>
+            ) : (
+              <>
+                <Link to="/" className="nav-link">Products</Link>
+                <Link to="/favorites" className="nav-link">
+                  <FaHeart className="nav-link-icon" />
+                  Favorites
+                </Link>
+                <Link to="/tracking" className="nav-link">Track Order</Link>
+              </>
+            )}
           </div>
         )}
 
+        {/* Search bar */}
         <div className="nav-search">
           <input type="text" placeholder="Search products..." className="search-input" />
           <button className="search-btn"><FaSearch /></button>
         </div>
 
+        {/* Icons / Login-Logout */}
         <div className="nav-icons">
           {!user ? (
             <Link to="/login_register" className="nav-icon">Login</Link>
@@ -47,11 +58,13 @@ export default function Navbar() {
                 <FaUser /><span>Logout</span>
               </button>
 
-              <Link to="/checkout" className="nav-icon">
-                <FaShoppingCart />
-                <span className="cart-count">{cartCount}</span>
-                <span>Cart</span>
-              </Link>
+              {!user.isAdmin && (
+                <Link to="/checkout" className="nav-icon">
+                  <FaShoppingCart />
+                  <span className="cart-count">{cartCount}</span>
+                  <span>Cart</span>
+                </Link>
+              )}
             </>
           )}
         </div>

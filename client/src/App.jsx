@@ -11,6 +11,7 @@ import { CartProvider } from './context/CartContext';
 import ProductPage from './pages/ProductPage';
 import './App.css';
 import AdminWelcome from './pages/AdminWelcome';
+import AdminDashboard from './pages/AdminDashboard';
 
 function PrivateRoute({ children }) {
   const { user } = useAuth();
@@ -48,7 +49,9 @@ export default function App() {
                 } />
                 <Route path="/admin_welcome" element={<PrivateRoute><AdminWelcome /></PrivateRoute>} />
 
-
+                <Route path="admin_dashboard" element={
+                  <PrivateRoute><AdminDashboard /></PrivateRoute>
+                } />
               </Routes>
             </main>
             <Footer />
