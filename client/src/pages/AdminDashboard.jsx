@@ -19,6 +19,7 @@ export default function AdminDashboard() {
     description: "",
     image: "",
   });
+  const [editingProduct, setEditingProduct] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // Redirect non-admins and load data
@@ -124,6 +125,89 @@ export default function AdminDashboard() {
     }
   };
 
+  // Update product
+  const handleUpdateProduct = async (e) => {
+    e.preventDefault();
+
+    if (!token || !editingProduct) {
+      alert("No product selected for editing.");
+      return;
+    }
+
+    const productPayload = {
+      name: editingProduct.name,
+      price: Number(editingProduct.price),
+      brand: editingProduct.brand,
+      category: editingProduct.category,
+      countInStock: Number(editingProduct.countInStock),
+      description: editingProduct.description,
+      image: editingProduct.image,
+    };
+
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/v1/products/${editingProduct._id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(productPayload),
+        }
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message || "Failed to update product");
+
+      setProducts(
+        products.map((p) => (p._id === editingProduct._id ? data : p))
+      );
+      setEditingProduct(null);
+
+      alert("Product updated!");
+    } catch (err) {
+      console.error("Error updating product:", err);
+      alert("Error updating product: " + err.message);
+    }
+  };
+
+  // Delete product
+  const handleDeleteProduct = async (productId) => {
+    if (!window.confirm("Are you sure you want to delete this product?")) {
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `http://localhost:5000/api/v1/products/${productId}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (!res.ok) throw new Error("Failed to delete product");
+
+      setProducts(products.filter((p) => p._id !== productId));
+      alert("Product deleted!");
+    } catch (err) {
+      console.error("Error deleting product:", err);
+      alert("Error deleting product: " + err.message);
+    }
+  };
+
+  // Start editing a product
+  const startEditingProduct = (product) => {
+    setEditingProduct({ ...product });
+  };
+
+  // Cancel editing
+  const cancelEditing = () => {
+    setEditingProduct(null);
+  };
+
   // Mark order as delivered
   const handleDeliverOrder = async (orderId) => {
     try {
@@ -169,75 +253,177 @@ export default function AdminDashboard() {
 
         {activeTab === "products" && (
           <div className="tab-content">
-            <h2>Add New Product</h2>
-            <form className="add-product-form" onSubmit={handleAddProduct}>
-              <input
-                type="text"
-                placeholder="Name"
-                value={newProduct.name}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, name: e.target.value })
-                }
-                required
-              />
-              <input
-                type="number"
-                placeholder="Price"
-                value={newProduct.price}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, price: e.target.value })
-                }
-                required
-              />
-              <input
-                type="text"
-                placeholder="Brand"
-                value={newProduct.brand}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, brand: e.target.value })
-                }
-                required
-              />
-              <input
-                type="text"
-                placeholder="Category"
-                value={newProduct.category}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, category: e.target.value })
-                }
-                required
-              />
-              <input
-                type="number"
-                placeholder="Stock Count"
-                value={newProduct.countInStock}
-                onChange={(e) =>
-                  setNewProduct({
-                    ...newProduct,
-                    countInStock: e.target.value,
-                  })
-                }
-                required
-              />
-              <input
-                type="text"
-                placeholder="Image URL"
-                value={newProduct.image}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, image: e.target.value })
-                }
-                required
-              />
-              <textarea
-                placeholder="Description"
-                value={newProduct.description}
-                onChange={(e) =>
-                  setNewProduct({ ...newProduct, description: e.target.value })
-                }
-                required
-              ></textarea>
-              <button type="submit">Add Product</button>
-            </form>
+            {!editingProduct ? (
+              <>
+                <h2>Add New Product</h2>
+                <form className="add-product-form" onSubmit={handleAddProduct}>
+                  <input
+                    type="text"
+                    placeholder="Name"
+                    value={newProduct.name}
+                    onChange={(e) =>
+                      setNewProduct({ ...newProduct, name: e.target.value })
+                    }
+                    required
+                  />
+                  <input
+                    type="number"
+                    placeholder="Price"
+                    value={newProduct.price}
+                    onChange={(e) =>
+                      setNewProduct({ ...newProduct, price: e.target.value })
+                    }
+                    required
+                  />
+                  <input
+                    type="text"
+                    placeholder="Brand"
+                    value={newProduct.brand}
+                    onChange={(e) =>
+                      setNewProduct({ ...newProduct, brand: e.target.value })
+                    }
+                    required
+                  />
+                  <input
+                    type="text"
+                    placeholder="Category"
+                    value={newProduct.category}
+                    onChange={(e) =>
+                      setNewProduct({ ...newProduct, category: e.target.value })
+                    }
+                    required
+                  />
+                  <input
+                    type="number"
+                    placeholder="Stock Count"
+                    value={newProduct.countInStock}
+                    onChange={(e) =>
+                      setNewProduct({
+                        ...newProduct,
+                        countInStock: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                  <input
+                    type="text"
+                    placeholder="Image URL"
+                    value={newProduct.image}
+                    onChange={(e) =>
+                      setNewProduct({ ...newProduct, image: e.target.value })
+                    }
+                    required
+                  />
+                  <textarea
+                    placeholder="Description"
+                    value={newProduct.description}
+                    onChange={(e) =>
+                      setNewProduct({
+                        ...newProduct,
+                        description: e.target.value,
+                      })
+                    }
+                    required
+                  ></textarea>
+                  <button type="submit">Add Product</button>
+                </form>
+              </>
+            ) : (
+              <>
+                <h2>Edit Product</h2>
+                <form className="add-product-form" onSubmit={handleUpdateProduct}>
+                  <input
+                    type="text"
+                    placeholder="Name"
+                    value={editingProduct.name}
+                    onChange={(e) =>
+                      setEditingProduct({
+                        ...editingProduct,
+                        name: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                  <input
+                    type="number"
+                    placeholder="Price"
+                    value={editingProduct.price}
+                    onChange={(e) =>
+                      setEditingProduct({
+                        ...editingProduct,
+                        price: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                  <input
+                    type="text"
+                    placeholder="Brand"
+                    value={editingProduct.brand}
+                    onChange={(e) =>
+                      setEditingProduct({
+                        ...editingProduct,
+                        brand: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                  <input
+                    type="text"
+                    placeholder="Category"
+                    value={editingProduct.category}
+                    onChange={(e) =>
+                      setEditingProduct({
+                        ...editingProduct,
+                        category: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                  <input
+                    type="number"
+                    placeholder="Stock Count"
+                    value={editingProduct.countInStock}
+                    onChange={(e) =>
+                      setEditingProduct({
+                        ...editingProduct,
+                        countInStock: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                  <input
+                    type="text"
+                    placeholder="Image URL"
+                    value={editingProduct.image}
+                    onChange={(e) =>
+                      setEditingProduct({
+                        ...editingProduct,
+                        image: e.target.value,
+                      })
+                    }
+                    required
+                  />
+                  <textarea
+                    placeholder="Description"
+                    value={editingProduct.description}
+                    onChange={(e) =>
+                      setEditingProduct({
+                        ...editingProduct,
+                        description: e.target.value,
+                      })
+                    }
+                    required
+                  ></textarea>
+                  <div style={{ display: "flex", gap: "10px" }}>
+                    <button type="submit">Update Product</button>
+                    <button type="button" onClick={cancelEditing}>
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </>
+            )}
 
             <h2>Existing Products</h2>
             <div className="product-list">
@@ -249,6 +435,12 @@ export default function AdminDashboard() {
                   <p>{p.brand}</p>
                   <p>{p.category}</p>
                   <p>Stock: {p.countInStock}</p>
+                  <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+                    <button onClick={() => startEditingProduct(p)}>Edit</button>
+                    <button onClick={() => handleDeleteProduct(p._id)}>
+                      Delete
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>

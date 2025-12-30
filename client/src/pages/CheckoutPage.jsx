@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
-import { FaCreditCard, FaLock, FaCheckCircle } from 'react-icons/fa';
+import { FaCreditCard, FaLock, FaCheckCircle, FaTrash, FaPlus, FaMinus } from 'react-icons/fa';
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from 'react-router-dom';
 import '../styles/CheckoutPage.css';
 
 export default function CheckoutPage() {
-  const { cart, clearCart } = useCart();
+  const { cart, clearCart, removeFromCart, updateQuantity } = useCart();
   const { token } = useAuth();
   const navigate = useNavigate();
 
@@ -22,11 +22,11 @@ export default function CheckoutPage() {
 
   const [loading, setLoading] = useState(false);
 
-  const BASE_URL = "http://localhost:5000/  /v1";
+  const BASE_URL = "http://localhost:5000/api/v1";
 
   const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const tax = subtotal * 0.1;
-  const shipping = 10;
+  const shipping = cart.length > 0 ? 10 : 0;
   const total = subtotal + tax + shipping;
 
   const handleChange = (e) => {
@@ -34,6 +34,25 @@ export default function CheckoutPage() {
       ...formData,
       [e.target.name]: e.target.value
     });
+  };
+
+  // Handle quantity increase
+  const handleIncreaseQty = (item) => {
+    updateQuantity(item.id, item.quantity + 1);
+  };
+
+  // Handle quantity decrease
+  const handleDecreaseQty = (item) => {
+    if (item.quantity > 1) {
+      updateQuantity(item.id, item.quantity - 1);
+    }
+  };
+
+  // Handle remove item
+  const handleRemoveItem = (itemId) => {
+    if (window.confirm("Remove this item from cart?")) {
+      removeFromCart(itemId);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -231,7 +250,7 @@ export default function CheckoutPage() {
                 </p>
               </div>
 
-              <button type="submit" className="place-order-btn" disabled={loading}>
+              <button type="submit" className="place-order-btn" disabled={loading || cart.length === 0}>
                 <FaCheckCircle />
                 <span>{loading ? "Processing..." : `Proceed to Payment – $${total.toFixed(2)}`}</span>
               </button>
@@ -243,40 +262,78 @@ export default function CheckoutPage() {
           <div className="order-summary">
             <h2>Order Summary</h2>
 
-            <div className="cart-items">
-              {cart.map((item) => (
-                <div key={item.id} className="summary-item">
-                  <img src={item.image} alt={item.name} />
-                  <div className="item-details">
-                    <h4>{item.name}</h4>
-                    <p>Qty: {item.quantity}</p>
-                  </div>
-                  <span className="item-price">
-                    ${(item.price * item.quantity).toFixed(2)}
-                  </span>
+            {cart.length === 0 ? (
+              <div className="empty-cart-message">
+                <p>Your cart is empty</p>
+                <button onClick={() => navigate("/")} className="continue-shopping-btn">
+                  Continue Shopping
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="cart-items">
+                  {cart.map((item) => (
+                    <div key={item.id} className="summary-item">
+                      <img src={item.image} alt={item.name} />
+                      <div className="item-details">
+                        <h4>{item.name}</h4>
+                        <div className="quantity-controls">
+                          <button 
+                            type="button"
+                            className="qty-btn"
+                            onClick={() => handleDecreaseQty(item)}
+                            disabled={item.quantity <= 1}
+                          >
+                            <FaMinus />
+                          </button>
+                          <span className="qty-display">{item.quantity}</span>
+                          <button 
+                            type="button"
+                            className="qty-btn"
+                            onClick={() => handleIncreaseQty(item)}
+                          >
+                            <FaPlus />
+                          </button>
+                        </div>
+                      </div>
+                      <div className="item-price-actions">
+                        <span className="item-price">
+                          ${(item.price * item.quantity).toFixed(2)}
+                        </span>
+                        <button 
+                          type="button"
+                          className="remove-item-btn"
+                          onClick={() => handleRemoveItem(item.id)}
+                          title="Remove item"
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
 
-            <div className="summary-divider"></div>
+                <div className="summary-divider"></div>
 
-            <div className="summary-calculations">
-              <div className="calc-row"><span>Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
-              <div className="calc-row"><span>Shipping</span><span>${shipping.toFixed(2)}</span></div>
-              <div className="calc-row"><span>Tax (10%)</span><span>${tax.toFixed(2)}</span></div>
-            </div>
+                <div className="summary-calculations">
+                  <div className="calc-row"><span>Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
+                  <div className="calc-row"><span>Shipping</span><span>${shipping.toFixed(2)}</span></div>
+                  <div className="calc-row"><span>Tax (10%)</span><span>${tax.toFixed(2)}</span></div>
+                </div>
 
-            <div className="summary-divider"></div>
+                <div className="summary-divider"></div>
 
-            <div className="summary-total">
-              <span>Total</span>
-              <span>${total.toFixed(2)}</span>
-            </div>
+                <div className="summary-total">
+                  <span>Total</span>
+                  <span>${total.toFixed(2)}</span>
+                </div>
 
-            <div className="trust-badges">
-              <div className="badge"><FaLock /><span>Secure Payment</span></div>
-              <div className="badge"><FaCheckCircle /><span>Guaranteed Protection</span></div>
-            </div>
+                <div className="trust-badges">
+                  <div className="badge"><FaLock /><span>Secure Payment</span></div>
+                  <div className="badge"><FaCheckCircle /><span>Guaranteed Protection</span></div>
+                </div>
+              </>
+            )}
 
           </div>
 
